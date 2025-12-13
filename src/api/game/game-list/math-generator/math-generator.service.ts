@@ -141,9 +141,15 @@ export abstract class MathGeneratorService {
   }
 
   static async checkAnswer(game_id: string, data: ICheckMathAnswer) {
-    const game = await prisma.games.findUnique({ where: { id: game_id } });
+    const game = await prisma.games.findUnique({
+      where: { id: game_id },
+      include: { game_template: true },
+    });
 
     if (!game) throw new ErrorResponse(StatusCodes.NOT_FOUND, 'Game not found');
+    if (!game.game_template || game.game_template.slug !== this.slug) {
+      throw new ErrorResponse(StatusCodes.NOT_FOUND, 'Game not found');
+    }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const json = game.game_json as IMathGeneratorJson;
