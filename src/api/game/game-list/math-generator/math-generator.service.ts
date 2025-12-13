@@ -274,14 +274,27 @@ export abstract class MathGeneratorService {
         let safety = 0;
 
         do {
-          wrongAnswer = answer + Math.floor(Math.random() * 20) - 10;
+          // Generate a plausible wrong answer: offset by 1-10, positive or negative, but always > 0
+          const offset = Math.floor(Math.random() * 10) + 1; // 1 to 10
+          // Randomly decide to add or subtract, but don't subtract if answer - offset <= 0
+          if (answer > offset && Math.random() < 0.5) {
+            wrongAnswer = answer - offset;
+          } else {
+            wrongAnswer = answer + offset;
+          }
           safety++;
         } while (
           (wrongAnswer <= 0 || options.includes(wrongAnswer)) &&
           safety < 50
         );
 
-        if (safety >= 50) wrongAnswer = answer + options.length + 1;
+        // Fallback: pick the next positive integer not in options
+        if (safety >= 50) {
+          wrongAnswer = answer + 1;
+          while (options.includes(wrongAnswer) || wrongAnswer <= 0) {
+            wrongAnswer++;
+          }
+        }
 
         options.push(wrongAnswer);
       }
