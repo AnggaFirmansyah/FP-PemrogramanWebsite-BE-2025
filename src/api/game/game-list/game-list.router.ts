@@ -11,17 +11,19 @@ import { SpinTheWheelController } from './spin-the-wheel/spin-the-wheel.controll
 import { TrueOrFalseController } from './true-or-false/true-or-false.controller';
 import { TypeSpeedController } from './type-speed/type-speed.controller';
 
-const gameListRouter = Router();
+const GameListRouter = Router();
 
-gameListRouter.use('/math-generator', MathGeneratorController);
-gameListRouter.use('/quiz', QuizController);
-gameListRouter.use('/maze-chase', MazeChaseController);
-gameListRouter.use('/speed-sorting', SpeedSortingController);
-gameListRouter.use('/anagram', AnagramController);
-gameListRouter.use('/pair-or-no-pair', PairOrNoPairController);
-gameListRouter.use('/type-speed', TypeSpeedController);
-gameListRouter.use('/sliding-puzzle', SlidingPuzzleController);
-gameListRouter.use('/true-or-false', TrueOrFalseController);
-gameListRouter.use('/spin-the-wheel', SpinTheWheelController);
+GameListRouter.use('/quiz', QuizController);
+GameListRouter.use('/maze-chase', MazeChaseController);
+GameListRouter.use('/sliding-puzzle', SlidingPuzzleController);
+GameListRouter.use('/speed-sorting', SpeedSortingController);
+GameListRouter.use('/anagram', AnagramController);
+GameListRouter.use('/crossword', CrosswordController);
+GameListRouter.use('/pair-or-no-pair', PairOrNoPairController);
+GameListRouter.use('/type-speed', TypeSpeedController);
+GameListRouter.use('/spin-the-wheel', SpinTheWheelController);
+GameListRouter.use('/true-or-false', TrueOrFalseController);
+GameListRouter.use('/math-generator', MathGeneratorController);
 
-export { gameListRouter };
+
+export { GameListRouter };
