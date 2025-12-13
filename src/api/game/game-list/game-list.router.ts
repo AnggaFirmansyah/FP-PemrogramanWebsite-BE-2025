@@ -1,6 +1,7 @@
 import { Router } from 'express';
 
 import { AnagramController } from './anagram/anagram.controller';
+import { CrosswordController } from './crossword/crossword.controller';
 import { MathGeneratorController } from './math-generator/math-generator.controller';
 import { MazeChaseController } from './maze-chase/maze-chase.controller';
 import { PairOrNoPairController } from './pair-or-no-pair/pair-or-no-pair.controller';
