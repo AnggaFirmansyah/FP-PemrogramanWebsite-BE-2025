@@ -5,7 +5,7 @@ export const CheckMathAnswerSchema = z.object({
     .array(
       z.object({
         question_index: z.number().int().min(0),
-        selected_answer: z.string(),
+        selected_answer: z.coerce.number(),
       }),
     )
     .min(1),
