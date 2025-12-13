@@ -155,16 +155,22 @@ export abstract class MathGeneratorService {
       const actualQuestion = json.questions[ans.question_index];
 
       if (!actualQuestion)
-        return { question_index: ans.question_index, is_correct: false };
+        return { question_index: ans.question_index, is_correct: false, invalid_answer: false };
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      const isCorrect = Number(ans.selected_answer) === actualQuestion.answer;
-
-      if (isCorrect) correctCount++;
+      const selectedNumber = Number(ans.selected_answer);
+      let isCorrect = false;
+      let invalidAnswer = false;
+      if (Number.isNaN(selectedNumber)) {
+        invalidAnswer = true;
+      } else {
+        isCorrect = selectedNumber === actualQuestion.answer;
+        if (isCorrect) correctCount++;
+      }
 
       return {
         question_index: ans.question_index,
         is_correct: isCorrect,
+        invalid_answer: invalidAnswer,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
         correct_answer: actualQuestion.answer,
       };
