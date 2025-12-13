@@ -147,6 +147,7 @@ export abstract class MathGeneratorService {
     });
 
     if (!game) throw new ErrorResponse(StatusCodes.NOT_FOUND, 'Game not found');
+
     if (!game.game_template || game.game_template.slug !== this.slug) {
       throw new ErrorResponse(StatusCodes.NOT_FOUND, 'Game not found');
     }
@@ -161,13 +162,18 @@ export abstract class MathGeneratorService {
       const actualQuestion = json.questions[ans.question_index];
 
       if (!actualQuestion)
-        return { question_index: ans.question_index, is_correct: false, invalid_answer: false };
+        return {
+          question_index: ans.question_index,
+          is_correct: false,
+          invalid_answer: false,
+        };
 
       const selectedNumber = Number(ans.selected_answer);
       let isCorrect = false;
-      let invalidAnswer = false;
+      let isInvalidAnswer = false;
+
       if (Number.isNaN(selectedNumber)) {
-        invalidAnswer = true;
+        isInvalidAnswer = true;
       } else {
         isCorrect = selectedNumber === actualQuestion.answer;
         if (isCorrect) correctCount++;
@@ -176,7 +182,7 @@ export abstract class MathGeneratorService {
       return {
         question_index: ans.question_index,
         is_correct: isCorrect,
-        invalid_answer: invalidAnswer,
+        invalid_answer: isInvalidAnswer,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
         correct_answer: actualQuestion.answer,
       };
@@ -287,12 +293,12 @@ export abstract class MathGeneratorService {
         do {
           // Generate a plausible wrong answer: offset by 1-10, positive or negative, but always > 0
           const offset = Math.floor(Math.random() * 10) + 1; // 1 to 10
+
           // Randomly decide to add or subtract, but don't subtract if answer - offset <= 0
-          if (answer > offset && Math.random() < 0.5) {
-            wrongAnswer = answer - offset;
-          } else {
-            wrongAnswer = answer + offset;
-          }
+          wrongAnswer =
+            answer > offset && Math.random() < 0.5
+              ? answer - offset
+              : answer + offset;
           safety++;
         } while (
           (wrongAnswer <= 0 || options.includes(wrongAnswer)) &&
@@ -302,6 +308,7 @@ export abstract class MathGeneratorService {
         // Fallback: pick the next positive integer not in options
         if (safety >= 50) {
           wrongAnswer = answer + 1;
+
           while (options.includes(wrongAnswer) || wrongAnswer <= 0) {
             wrongAnswer++;
           }

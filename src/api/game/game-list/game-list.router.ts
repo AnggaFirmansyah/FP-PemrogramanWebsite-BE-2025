@@ -22,5 +22,6 @@ gameListRouter.use('/pair-or-no-pair', PairOrNoPairController);
 gameListRouter.use('/type-speed', TypeSpeedController);
 gameListRouter.use('/sliding-puzzle', SlidingPuzzleController);
 gameListRouter.use('/true-or-false', TrueOrFalseController);
+gameListRouter.use('/spin-the-wheel', SpinTheWheelController);
 
 export { gameListRouter };
