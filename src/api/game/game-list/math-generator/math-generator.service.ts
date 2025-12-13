@@ -175,8 +175,7 @@ export abstract class MathGeneratorService {
     const score =
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       json.questions.length > 0
-        ? // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-          (correctCount / json.questions.length) * 100
+        ? (correctCount / json.questions.length) * maxScore
         : 0;
 
     return {
