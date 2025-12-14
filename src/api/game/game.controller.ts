@@ -53,7 +53,7 @@ export const GameController = Router()
 
         return response.status(result.statusCode).json(result.json());
       } catch (error) {
-        return next(error);
+        return next(error as Error);
       }
     },
   )
@@ -82,7 +82,7 @@ export const GameController = Router()
 
         return response.status(result.statusCode).json(result.json());
       } catch (error) {
-        return next(error);
+        return next(error as Error);
       }
     },
   )
@@ -113,7 +113,7 @@ export const GameController = Router()
 
         return response.status(result.statusCode).json(result.json());
       } catch (error) {
-        return next(error);
+        return next(error as Error);
       }
     },
   )
@@ -146,7 +146,7 @@ export const GameController = Router()
 
         return response.status(result.statusCode).json(result.json());
       } catch (error) {
-        return next(error);
+        return next(error as Error);
       }
     },
   )
@@ -167,7 +167,7 @@ export const GameController = Router()
 
         return response.status(result.statusCode).json(result.json());
       } catch (error) {
-        return next(error);
+        return next(error as Error);
       }
     },
   )
@@ -196,7 +196,7 @@ export const GameController = Router()
 
         return response.status(result.statusCode).json(result.json());
       } catch (error) {
-        return next(error);
+        return next(error as Error);
       }
     },
   )
@@ -224,7 +224,7 @@ export const GameController = Router()
 
         return response.status(result.statusCode).json(result.json());
       } catch (error) {
-        return next(error);
+        return next(error as Error);
       }
     },
   )
