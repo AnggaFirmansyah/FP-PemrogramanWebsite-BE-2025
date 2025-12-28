@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { type Prisma, type ROLE } from '@prisma/client';
 import { StatusCodes } from 'http-status-codes';
 import { v4 } from 'uuid';
@@ -97,7 +101,6 @@ export abstract class MathGeneratorService {
     game_id: string,
     is_public: boolean,
     user_id?: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     role?: ROLE,
   ) {
     const game = await prisma.games.findUnique({
@@ -114,15 +117,11 @@ export abstract class MathGeneratorService {
       throw new ErrorResponse(StatusCodes.FORBIDDEN, 'Access denied');
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const json = game.game_json as IMathGeneratorJson;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    const json = game.game_json as unknown as IMathGeneratorJson;
+
     const cleanQuestions = json.questions.map((q, index) => ({
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
       index,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
       question: q.question,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
       options: q.options,
     }));
 
@@ -131,11 +130,8 @@ export abstract class MathGeneratorService {
       name: game.name,
       description: game.description,
       thumbnail_image: game.thumbnail_image,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
       settings: json.settings,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
       score_per_question: json.score_per_question,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       questions: cleanQuestions,
     };
   }
@@ -152,13 +148,10 @@ export abstract class MathGeneratorService {
       throw new ErrorResponse(StatusCodes.NOT_FOUND, 'Game not found');
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const json = game.game_json as IMathGeneratorJson;
+    const json = game.game_json as unknown as IMathGeneratorJson;
     let correctCount = 0;
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const results = data.answers.map(ans => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
       const actualQuestion = json.questions[ans.question_index];
 
       if (!actualQuestion)
@@ -183,15 +176,12 @@ export abstract class MathGeneratorService {
         question_index: ans.question_index,
         is_correct: isCorrect,
         invalid_answer: isInvalidAnswer,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
         correct_answer: actualQuestion.answer,
       };
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const maxScore = json.questions.length * json.score_per_question;
     const score =
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       json.questions.length > 0
         ? (correctCount / json.questions.length) * maxScore
         : 0;
@@ -291,10 +281,7 @@ export abstract class MathGeneratorService {
         let safety = 0;
 
         do {
-          // Generate a plausible wrong answer: offset by 1-10, positive or negative, but always > 0
-          const offset = Math.floor(Math.random() * 10) + 1; // 1 to 10
-
-          // Randomly decide to add or subtract, but don't subtract if answer - offset <= 0
+          const offset = Math.floor(Math.random() * 10) + 1;
           wrongAnswer =
             answer > offset && Math.random() < 0.5
               ? answer - offset
@@ -305,7 +292,6 @@ export abstract class MathGeneratorService {
           safety < 50
         );
 
-        // Fallback: pick the next positive integer not in options
         if (safety >= 50) {
           wrongAnswer = answer + 1;
 
@@ -338,7 +324,6 @@ export abstract class MathGeneratorService {
       throw new ErrorResponse(StatusCodes.NOT_FOUND, 'Game not found');
     }
 
-    // Check permission
     if (role !== 'SUPER_ADMIN' && game.creator_id !== user_id) {
       throw new ErrorResponse(
         StatusCodes.FORBIDDEN,
@@ -346,8 +331,7 @@ export abstract class MathGeneratorService {
       );
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const json = game.game_json as IMathGeneratorJson;
+    const json = game.game_json as unknown as IMathGeneratorJson;
 
     return {
       id: game.id,
@@ -356,9 +340,7 @@ export abstract class MathGeneratorService {
       thumbnail_image: game.thumbnail_image,
       is_published: game.is_published,
       creator_id: game.creator_id,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
       settings: json.settings,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
       score_per_question: json.score_per_question,
       total_played: game.total_played,
       liked_by_count: game._count.liked,
@@ -382,7 +364,6 @@ export abstract class MathGeneratorService {
       throw new ErrorResponse(StatusCodes.NOT_FOUND, 'Game not found');
     }
 
-    // Check permission
     if (role !== 'SUPER_ADMIN' && game.creator_id !== user_id) {
       throw new ErrorResponse(
         StatusCodes.FORBIDDEN,
@@ -390,7 +371,6 @@ export abstract class MathGeneratorService {
       );
     }
 
-    // Check if name already exists (exclude current game)
     if (data.name && data.name !== game.name) {
       const exist = await prisma.games.findUnique({
         where: { name: data.name },
@@ -404,79 +384,54 @@ export abstract class MathGeneratorService {
       }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const currentJson = game.game_json as IMathGeneratorJson;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const currentJson = game.game_json as unknown as IMathGeneratorJson;
     let newJson = { ...currentJson };
 
-    // Check if settings changed (need to regenerate questions)
     const isSettingsChanged =
       data.operation !== undefined ||
       data.difficulty !== undefined ||
       data.question_count !== undefined;
-    // Note: game_type change doesn't require question regeneration
 
     if (isSettingsChanged) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       const newSettings = {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
         operation: data.operation ?? currentJson.settings.operation,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
         difficulty: data.difficulty ?? currentJson.settings.difficulty,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
         game_type: data.game_type ?? currentJson.settings.game_type,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
         theme: data.theme ?? currentJson.settings.theme,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
         question_count:
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
           data.question_count ?? currentJson.settings.question_count,
       };
 
       const generatedQuestions = this.generateQuestions(
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         newSettings.operation,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         newSettings.difficulty,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         newSettings.question_count,
       );
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       newJson = {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         settings: newSettings,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
         score_per_question:
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
           data.score_per_question ?? currentJson.score_per_question,
         questions: generatedQuestions,
       };
     } else {
-      // Only update non-question fields
       if (data.game_type !== undefined) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         newJson.settings.game_type = data.game_type;
       }
 
       if (data.theme !== undefined) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         newJson.settings.theme = data.theme;
       }
 
       if (data.score_per_question !== undefined) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         newJson.score_per_question = data.score_per_question;
       }
     }
 
-    // Handle thumbnail update
     let thumbnailPath = game.thumbnail_image;
 
     if (data.thumbnail_image) {
-      // Delete old thumbnail if exists
       if (game.thumbnail_image) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         await FileManager.remove(game.thumbnail_image);
       }
 
@@ -516,7 +471,6 @@ export abstract class MathGeneratorService {
       throw new ErrorResponse(StatusCodes.NOT_FOUND, 'Game not found');
     }
 
-    // Check permission
     if (role !== 'SUPER_ADMIN' && game.creator_id !== user_id) {
       throw new ErrorResponse(
         StatusCodes.FORBIDDEN,
@@ -524,9 +478,7 @@ export abstract class MathGeneratorService {
       );
     }
 
-    // Delete thumbnail if exists
     if (game.thumbnail_image) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       await FileManager.remove(game.thumbnail_image);
     }
 
