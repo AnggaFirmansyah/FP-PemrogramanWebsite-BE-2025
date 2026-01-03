@@ -2,6 +2,7 @@ export * from './crossword.interface';
 export * from './hangman.interface';
 export * from './maze-chase.interface';
 export * from './pair-or-no-pair.interface';
+export * from './puzzle.interface';
 export * from './quiz.interface';
 export * from './sliding-puzzle.interface';
 export * from './speed-sorting.interface';
